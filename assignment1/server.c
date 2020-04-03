@@ -8,8 +8,9 @@
 #include <assert.h> 
 #include <sys/types.h>
 #include <pwd.h>
+#include <sys/wait.h>
 #include <errno.h> 
-#define PORT 8080 
+#define PORT 80
 
 int drop_privelege()
 {
@@ -26,7 +27,7 @@ int drop_privelege()
         return 0;
     }
     if (setuid(pw->pw_uid) != 0){
-        printf("\nsetuid failed with error no : %d\n", errno); 
+        printf("setuid failed with error no : %d\n", errno); 
         return 0;
     }
     printf("Succesfully dropped privilege\n");
@@ -74,6 +75,7 @@ int main(int argc, char const *argv[])
     if (child == 0) {
         //Drop privilege
         if (drop_privelege() == 0){
+            perror("privilege drop failed");
             exit(EXIT_FAILURE);
         }
         if (listen(server_fd, 3) < 0) 
